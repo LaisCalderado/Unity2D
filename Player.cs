@@ -57,6 +57,18 @@ public class Player : MonoBehaviour{
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
         }
         
-    }        
+    }     
+
+    void OnCollisionEnter2D(Collision2D other) {
+
+        
+        Debug.Log("Colidiu");
+        
+    }   
+
+    void OnCollisionExit2D(Collision2D other) {
+        
+        Debug.Log("Parou de colidir");
+    } 
 
 }
