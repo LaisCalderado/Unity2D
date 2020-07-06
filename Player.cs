@@ -55,7 +55,7 @@ public class Player : MonoBehaviour{
         {
             //O boneco receberá uma força na vertical, ou seja ele pulará
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
-            //Toda vez que apartar espaço o boneco pula e solta o som de pulo
+            //Adicionando o som de pulo
             GetComponent<AudioSource>().Play();
         }
         
@@ -63,7 +63,6 @@ public class Player : MonoBehaviour{
 
     void OnCollisionEnter2D(Collision2D other) {
 
-        
         Debug.Log("Colidiu");
         
     }   
