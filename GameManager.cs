@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     
     public void Pause(){
 
+        Adicionando funcionalidade ao botão pause
         if (isPause){
             //Se estiver pausado eu desativo o pause
             PainelCompleto.SetActive(false);
