@@ -11,6 +11,8 @@ public class Player : MonoBehaviour{
     public int rings;
     public Text TexteLives;
     public Text TexteRings;
+    public bool noChao;
+    public bool canFly;
 
     // Use isto para inicialização
     void Start(){
@@ -53,23 +55,57 @@ public class Player : MonoBehaviour{
         //se o comando espaco for pressionado
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //O boneco receberá uma força na vertical, ou seja ele pulará
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
-            //Adicionando o som de pulo
-            GetComponent<AudioSource>().Play();
+            if(noChao){
+                //O boneco receberá uma força na vertical, ou seja ele pulará
+                GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
+                //Adicionando o som de pulo
+                GetComponent<AudioSource>().Play();
+                //Não pode voar
+                canFly = false;
+
+            }else canFly = true; //Se não ele pode voar
+            
+        }
+        //Se estiver no chão ou apertando o botão de espaço
+        if(canFly && Input.GetKey(KeyCode.Space) ){
+            //Ele pode voar
+            GetComponent<Animator>().SetBool("flyinng", true);//Flying é o parametro
+            //Adicionando uma velocidade para ele "planar"
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, -0.5f);
+        }
+        //Se não estiver nem no chão e nem apertando espaço ele não pode voar
+        else GetComponent<Animator>().SetBool("flyinng", false); 
+
+
+        //Se o boneco estive no chão
+        if(noChao){
+            //Ele pode pular
+            GetComponent<Animator>().SetBool("jumping", false);
         }
         
+        else{ 
+            //Se não, ele não pode voar
+            GetComponent<Animator>().SetBool("jumping", true);
+        }
     }     
+    //Verifica se está colidindo com algo
+    void OnCollisionEnter2D(Collision2D collision2D) {
 
-    void OnCollisionEnter2D(Collision2D other) {
+        //Se tive colidindo com alguma coisa então ele está no chão
+        if(collision2D.gameObject.CompareTag("Plataformas")){
 
-        Debug.Log("Colidiu");
+            noChao = true;
+        }
         
     }   
+    //Verifica se parou de colidir
+    void OnCollisionExit2D(Collision2D collision2D) {
+    
+       // Se não estier colidinfo com nada, é porque não está no chão
+        if(collision2D.gameObject.CompareTag("Plataformas")){
 
-    void OnCollisionExit2D(Collision2D other) {
-        
-        Debug.Log("Parou de colidir");
+            noChao = false;
+        }
     } 
 
 }
