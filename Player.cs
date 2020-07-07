@@ -13,6 +13,7 @@ public class Player : MonoBehaviour{
     public Text TexteRings;
     public bool noChao;
     public bool canFly;
+    public bool inWater;
 
     // Use isto para inicialização
     void Start(){
@@ -44,6 +45,7 @@ public class Player : MonoBehaviour{
             //Pegando componente SpriteRenderer o obejto flip se ele for falso o boneco não faz o flip
             GetComponent<SpriteRenderer>().flipX = false;            
         }
+
         //Verificando se o boneco está andando para direita ou para a esqueda
         if(movimento > 0 || movimento < 0){
             //Se estive faz a animação de movimento
@@ -52,42 +54,77 @@ public class Player : MonoBehaviour{
             //Se não estive (ou seja se ele estiver parado) fica parado
             GetComponent<Animator>().SetBool("walking", false);
         }
-        //se o comando espaco for pressionado
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+
+        //Ele só pode fazer essas coisa se ele NÃO estive na água
+        if (!inWater){
+
+            //se o comando espaco for pressionado
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if(noChao){
+                    //O boneco receberá uma força na vertical, ou seja ele pulará
+                    GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
+                    //Adicionando o som de pulo
+                    GetComponent<AudioSource>().Play();
+                    //Não pode voar
+                    canFly = false;
+
+                }else canFly = true; //Se não ele pode voar 
+            }
+
+            //Se estiver no chão ou apertando o botão de espaço
+            if(canFly && Input.GetKey(KeyCode.Space) ){
+                //Ele pode voar
+                GetComponent<Animator>().SetBool("flyinng", true);//Flying é o parametro
+                //Adicionando uma velocidade para ele "planar"
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, -0.5f);
+            }
+            //Se não estiver nem no chão e nem apertando espaço ele não pode voar
+            else GetComponent<Animator>().SetBool("flyinng", false); 
+
+
+            //Se o boneco estive no chão
             if(noChao){
-                //O boneco receberá uma força na vertical, ou seja ele pulará
-                GetComponent<Rigidbody2D>().AddForce(new Vector2(0,forcaPulo));
-                //Adicionando o som de pulo
-                GetComponent<AudioSource>().Play();
-                //Não pode voar
-                canFly = false;
+                //Ele pode pular
+                GetComponent<Animator>().SetBool("jumping", false);
+            }else{ 
+                //Se não, ele não pode voar
+                GetComponent<Animator>().SetBool("jumping", true);
+            }
+        }else{
+            //Se ele estive na agua e apertar para cima
+            if (Input.GetKey(KeyCode.UpArrow)){
+                //Adiciona uma força 
+                rigidbody.AddForce(new Vector2(0, 6f * Time.deltaTime), ForceMode2D.Impulse);
+            }
+            //Se ele apertar para baixo (na agua), aciona uma força inversa
+            if (Input.GetKey(KeyCode.DownArrow)){
 
-            }else canFly = true; //Se não ele pode voar
-            
+                rigidbody.AddForce(new Vector2(0, -6f * Time.deltaTime), ForceMode2D.Impulse);
+            }
+            //Mas a todo tempo acionando uma for no player
+            rigidbody.AddForce(new Vector2(0, 10f * Time.deltaTime), ForceMode2D.Impulse);
         }
-        //Se estiver no chão ou apertando o botão de espaço
-        if(canFly && Input.GetKey(KeyCode.Space) ){
-            //Ele pode voar
-            GetComponent<Animator>().SetBool("flyinng", true);//Flying é o parametro
-            //Adicionando uma velocidade para ele "planar"
-            rigidbody.velocity = new Vector2(rigidbody.velocity.x, -0.5f);
-        }
-        //Se não estiver nem no chão e nem apertando espaço ele não pode voar
-        else GetComponent<Animator>().SetBool("flyinng", false); 
-
-
-        //Se o boneco estive no chão
-        if(noChao){
-            //Ele pode pular
-            GetComponent<Animator>().SetBool("jumping", false);
-        }
-        
-        else{ 
-            //Se não, ele não pode voar
-            GetComponent<Animator>().SetBool("jumping", true);
-        }
+        //Chamando a animação de nadar
+        GetComponent<Animator>().SetBool("swimming", inWater);
     }     
+
+    //Verificando se ele está ou não na "água"
+    void OnTriggerEnter2D(Collider2D collision2D) {
+        
+        if(collision2D.gameObject.CompareTag("Water")){
+            inWater = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision2D) {
+        
+        if(collision2D.gameObject.CompareTag("Water")){
+            inWater = false;
+        }
+    }
+
+
     //Verifica se está colidindo com algo
     void OnCollisionEnter2D(Collision2D collision2D) {
 
