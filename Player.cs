@@ -112,13 +112,15 @@ public class Player : MonoBehaviour{
     //Verificando se ele está ou não na "água"
     void OnTriggerEnter2D(Collider2D collision2D) {
         
+        //Se o personagem colidir com a tag Water é pq está 
         if(collision2D.gameObject.CompareTag("Water")){
             inWater = true;
         }
     }
 
     void OnTriggerExit2D(Collider2D collision2D) {
-        
+
+        //Se o personagem parar de colidir com a tag Water é pq não está 
         if(collision2D.gameObject.CompareTag("Water")){
             inWater = false;
         }
@@ -133,8 +135,16 @@ public class Player : MonoBehaviour{
 
             noChao = true;
         }
-        
+
+        //Se o personagem colidir com a tag trampolim
+        if(collision2D.gameObject.CompareTag("Trampolim")){
+            //Ele receberá uma força na vertical, fazendo ele ter impulso
+            GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 5f);
+            
+        }        
     }   
+
+    
     //Verifica se parou de colidir
     void OnCollisionExit2D(Collision2D collision2D) {
     
