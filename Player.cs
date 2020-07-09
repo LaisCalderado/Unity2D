@@ -116,6 +116,13 @@ public class Player : MonoBehaviour{
         if(collision2D.gameObject.CompareTag("Water")){
             inWater = true;
         }
+
+        //Se o personagem colidir com uma moeda
+        if(collision2D.gameObject.CompareTag("Moedas")){
+            Destroy(collision2D.gameObject);//Assim que pegar as moedas elas serão destroidas
+            rings++; //Contador de moedas
+            TexteRings.text = rings.ToString();//Irá aumentar o numero na ilustração
+        }     
     }
 
     void OnTriggerExit2D(Collider2D collision2D) {
