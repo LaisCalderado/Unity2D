@@ -14,6 +14,7 @@ public class Player : MonoBehaviour{
     public bool noChao;
     public bool canFly;
     public bool inWater;
+    public GameObject lastCheckPoint;
 
     // Use isto para inicialização
     void Start(){
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour{
         {
             //Pegando componente SpriteRenderer o obejto flip se ele for verdadeiro o boneco faz o flip
             GetComponent<SpriteRenderer>().flipX = true;
+            
         } else if (movimento > 0)
         {
             //Pegando componente SpriteRenderer o obejto flip se ele for falso o boneco não faz o flip
@@ -122,6 +124,13 @@ public class Player : MonoBehaviour{
             Destroy(collision2D.gameObject);//Assim que pegar as moedas elas serão destroidas
             rings++; //Contador de moedas
             TexteRings.text = rings.ToString();//Irá aumentar o numero na ilustração
+        }
+
+        //Verificar se o personagem colidiu com o CheckPonti
+        if(collision2D.gameObject.CompareTag("CheckPoint")){
+            //Saber qual foi o ultimo checkpoint q o personagem encostou
+            lastCheckPoint = collision2D.gameObject;
+
         }     
     }
 
@@ -136,6 +145,15 @@ public class Player : MonoBehaviour{
 
     //Verifica se está colidindo com algo
     void OnCollisionEnter2D(Collision2D collision2D) {
+        //Se o persogaem colidiu com um monstro
+        if(collision2D.gameObject.CompareTag("Monstros")){
+            lives--;//Perde uma vida
+            TexteLives.text = lives.ToString();//Muda a imagem de vida no game
+            if(lives == 0){//Se o numero de vidas for igual a zero
+                //O Personagem volta para o ultimo checkpoint que ele fez
+                transform.position = lastCheckPoint.transform.position;
+            }
+        }
 
         //Se tive colidindo com alguma coisa então ele está no chão
         if(collision2D.gameObject.CompareTag("Plataformas")){
