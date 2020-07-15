@@ -109,6 +109,25 @@ public class Player : MonoBehaviour{
         }
         //Chamando a animação de nadar
         GetComponent<Animator>().SetBool("swimming", inWater);
+
+        //Verifica se apertou a tecla ctrl
+        if(Input.GetKeyDown(KeyCode.LeftControl)){
+            //Faz a animação
+            GetComponent<Animator>().SetTrigger("hammer");
+            Collider2D[] colliders = new Collider2D[3];
+            //Pega o collider do HammerArea
+            transform.Find("HammerArea").gameObject.GetComponent<Collider2D>()
+                //Retornar todos os objetos que estão em colisao com o HammerArea e coloca na lista colliders
+                .OverlapCollider(new ContactFilter2D(), colliders);
+            //Faz a verificação e
+            for(int i = 0; i < colliders.Length; i++){
+                //Pegando cada collider e verificando se a tag é Monstros
+                if(colliders[i] != null && colliders[i].gameObject.CompareTag("Monstros")){
+                    //Se for destroi o monstro
+                    Destroy(colliders[i].gameObject);
+                }
+            }
+        }
     }     
 
     //Verificando se ele está ou não na "água"
